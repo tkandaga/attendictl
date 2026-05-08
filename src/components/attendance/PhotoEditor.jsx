@@ -5,9 +5,9 @@ import { ArrowRight, ZoomIn, ZoomOut, Move } from 'lucide-react';
 
 const TWIBBON_URL = 'https://media.base44.com/images/public/69fdae0983a85702d2227a8c/5b20a713d_twibbone_ictl2026.png';
 
-// Posisi kotak abu-abu di template (dalam koordinat canvas 500x500)
-// Kotak abu di kiri bawah: approx x=18, y=455, w=215, h=68
-const BOX = { x: 18, y: 455, w: 215, h: 68, pad: 10 };
+// Posisi kotak abu-abu relatif terhadap canvas 500x500
+// Template square: kotak abu ~x=3%, y=58%, w=42%, h=12%
+const BOX = { x: 15, y: 293, w: 210, h: 62, pad: 10 };
 
 export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBack }) {
   const canvasRef = useRef(null);
@@ -60,8 +60,14 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBa
     // Draw twibbon on top (PNG with transparency)
     ctx.drawImage(twibbonImg.current, 0, 0, CANVAS_W, CANVAS_H);
 
+    // DEBUG: gambar border merah untuk lihat posisi BOX
+    ctx.save();
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(BOX.x, BOX.y, BOX.w, BOX.h);
+    ctx.restore();
+
     // Gambar teks nama & instansi di dalam kotak abu-abu
-    // Clip agar teks tidak keluar kotak
     ctx.save();
     ctx.beginPath();
     ctx.rect(BOX.x, BOX.y, BOX.w, BOX.h);
