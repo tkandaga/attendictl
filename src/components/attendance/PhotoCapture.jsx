@@ -1,28 +1,19 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Camera, Upload, RotateCcw, ArrowRight } from 'lucide-react';
 
 export default function PhotoCapture({ onNext, onBack }) {
   const [photoDataUrl, setPhotoDataUrl] = useState(null);
   const [mode, setMode] = useState('choose'); // choose | camera | preview
+  const videoRef = useRef(null);
   const streamRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const startCamera = async () => {
-    const s = await navigator.mediaDevices.getUserMedia({ 
-      video: { facingMode: 'user' }, 
-      audio: false 
-    });
-    streamRef.current = s;
     setMode('camera');
-  };
-
-  // Callback ref: dipanggil saat elemen video muncul di DOM
-  const videoCallbackRef = (videoEl) => {
-    if (videoEl && streamRef.current) {
-      videoEl.srcObject = streamRef.current;
-      videoEl.play().catch(() => {});
-    }
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    streamRef.current = stream;
+    if (videoRef.current) videoRef.current.srcObject = stream;
   };
 
   const stopCamera = () => {
@@ -33,10 +24,10 @@ export default function PhotoCapture({ onNext, onBack }) {
   };
 
   const capturePhoto = () => {
-    const video = document.querySelector('video');
+    const video = videoRef.current;
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 640;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
     canvas.getContext('2d').drawImage(video, 0, 0);
     setPhotoDataUrl(canvas.toDataURL('image/jpeg', 0.9));
     stopCamera();
@@ -85,13 +76,7 @@ export default function PhotoCapture({ onNext, onBack }) {
 
         {mode === 'camera' && (
           <div className="space-y-4">
-            <video 
-              ref={videoCallbackRef}
-              autoPlay 
-              playsInline 
-              muted
-              className="w-full rounded-xl aspect-square object-cover bg-gray-900" 
-            />
+            <video ref={videoRef} autoPlay playsInline className="w-full rounded-xl aspect-[3/4] object-cover bg-gray-900" />
             <div className="flex gap-3">
               <Button onClick={reset} variant="outline" className="flex-1">
                 <RotateCcw className="mr-2 w-4 h-4" /> Batal
@@ -105,7 +90,7 @@ export default function PhotoCapture({ onNext, onBack }) {
 
         {mode === 'preview' && (
           <div className="space-y-4">
-            <img src={photoDataUrl} alt="preview" className="w-full rounded-xl aspect-square object-cover" />
+            <img src={photoDataUrl} alt="preview" className="w-full rounded-xl aspect-[3/4] object-cover" />
             <div className="flex gap-3">
               <Button onClick={reset} variant="outline" className="flex-1">
                 <RotateCcw className="mr-2 w-4 h-4" /> Ulangi
