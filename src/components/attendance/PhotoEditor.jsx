@@ -3,10 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { ArrowRight, ZoomIn, ZoomOut, Move } from 'lucide-react';
 
-const TWIBBON_URL = 'https://media.base44.com/images/public/69fdae0983a85702d2227a8c/5b20a713d_twibbone_ictl2026.png';
+const TWIBBON_URL = 'https://media.base44.com/images/public/69fdae0983a85702d2227a8c/d9e29f14b_twibbone-ictl2026.png';
 
-// Posisi kotak abu-abu relatif terhadap canvas 500x500
-const BOX = { x: 15, y: 243, w: 210, h: 62, pad: 10 };
+// Template adalah square 1:1. Kotak abu-abu kiri bawah ~x=3%, y=78%, w=43%, h=10%
+// Dalam canvas 500x500: x=15, y=390, w=215, h=50
+const BOX = { x: 15, y: 390, w: 215, h: 50, pad: 8 };
 
 export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBack }) {
   const canvasRef = useRef(null);
@@ -59,35 +60,40 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBa
     // Draw twibbon on top (PNG with transparency)
     ctx.drawImage(twibbonImg.current, 0, 0, CANVAS_W, CANVAS_H);
 
-    // Gambar teks nama & instansi di dalam kotak abu-abu
+    // Gambar teks nama & instansi di dalam kotak abu-abu (centered, max 15 karakter)
     ctx.save();
     ctx.beginPath();
     ctx.rect(BOX.x, BOX.y, BOX.w, BOX.h);
     ctx.clip();
 
     const maxW = BOX.w - BOX.pad * 2;
+    const centerX = BOX.x + BOX.w / 2;
 
-    // Helper: cari ukuran font terbesar yg muat dalam maxW (single line)
-    const fitFontSize = (text, bold, maxSize, minSize) => {
+    // Truncate ke 15 karakter
+    const namaText = nama.length > 15 ? nama.substring(0, 15) : nama;
+    const instansiText = instansi.length > 15 ? instansi.substring(0, 15) : instansi;
+
+    // Helper: cari ukuran font terbesar yg muat dalam maxW
+    const fitFontSize = (text, fontStyle, maxSize, minSize) => {
       for (let size = maxSize; size >= minSize; size--) {
-        ctx.font = `${bold ? 'bold ' : ''}${size}px Arial`;
+        ctx.font = `${fontStyle} ${size}px Arial`;
         if (ctx.measureText(text).width <= maxW) return size;
       }
       return minSize;
     };
 
-    // Nama - bold putih, auto shrink dari 16px min 8px
-    const namaSize = fitFontSize(nama, true, 16, 8);
+    // Nama - putih, centered, lebih besar
+    const namaSize = fitFontSize(namaText, 'bold', 17, 8);
     ctx.font = `bold ${namaSize}px Arial`;
     ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'left';
-    ctx.fillText(nama, BOX.x + BOX.pad, BOX.y + BOX.pad + namaSize);
+    ctx.textAlign = 'center';
+    ctx.fillText(namaText, centerX, BOX.y + BOX.pad + namaSize);
 
-    // Instansi - kuning, auto shrink dari 13px min 7px
-    const instansiSize = fitFontSize(instansi, false, 13, 7);
-    ctx.font = `${instansiSize}px Arial`;
+    // Instansi - kuning bold, centered, sedikit lebih kecil
+    const instansiSize = fitFontSize(instansiText, 'bold', 13, 7);
+    ctx.font = `bold ${instansiSize}px Arial`;
     ctx.fillStyle = '#f0b429';
-    ctx.fillText(instansi, BOX.x + BOX.pad, BOX.y + BOX.pad + namaSize + instansiSize + 4);
+    ctx.fillText(instansiText, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 4);
 
     ctx.restore();
   }, [loaded, photoPos, photoScale, nama, instansi]);
