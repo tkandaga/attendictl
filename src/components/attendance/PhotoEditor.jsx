@@ -6,8 +6,7 @@ import { ArrowRight, ZoomIn, ZoomOut, Move } from 'lucide-react';
 const TWIBBON_URL = 'https://media.base44.com/images/public/69fdae0983a85702d2227a8c/5b20a713d_twibbone_ictl2026.png';
 
 // Posisi kotak abu-abu relatif terhadap canvas 500x500
-// Template square: kotak abu ~x=3%, y=58%, w=42%, h=12%
-const BOX = { x: 15, y: 293, w: 210, h: 62, pad: 10 };
+const BOX = { x: 15, y: 243, w: 210, h: 62, pad: 10 };
 
 export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBack }) {
   const canvasRef = useRef(null);
