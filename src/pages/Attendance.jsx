@@ -27,6 +27,7 @@ export default function Attendance() {
           title: 'Sudah Terdaftar',
           description: `Nama "${nama}" sudah terdaftar sebelumnya.`,
           variant: 'destructive',
+          duration: 3000,
         });
         return;
       }
