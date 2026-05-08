@@ -87,13 +87,13 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBa
     ctx.font = `bold ${namaSize}px Arial`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    ctx.fillText(namaText, centerX, BOX.y + BOX.pad + namaSize);
+    ctx.fillText(namaText, centerX, BOX.y + BOX.pad + namaSize + 8);
 
     // Instansi - kuning bold, centered, auto shrink 14px→7px
     const instansiSize = fitFontSize(instansiText, 'bold', 14, 7);
     ctx.font = `bold ${instansiSize}px Arial`;
     ctx.fillStyle = '#f0b429';
-    ctx.fillText(instansiText, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 6);
+    ctx.fillText(instansiText, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 18);
 
     ctx.restore();
   }, [loaded, photoPos, photoScale, nama, instansi]);
