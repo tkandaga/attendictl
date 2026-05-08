@@ -60,13 +60,22 @@ export default function Attendance() {
         fotoUrl = uploadRes.file_url || '';
       }
 
+      // Upload tanda tangan ke storage
+      let ttdUrl = '';
+      if (signatureDataUrl) {
+        const blob = await (await fetch(signatureDataUrl)).blob();
+        const file = new File([blob], 'ttd.png', { type: 'image/png' });
+        const uploadRes = await base44.integrations.Core.UploadFile({ file });
+        ttdUrl = uploadRes.file_url || '';
+      }
+
       // Kirim ke Google Sheet
       await base44.functions.invoke('submitAttendance', {
         action: 'append',
         nama: formData.nama,
         instansi: formData.instansi,
         fotoUrl,
-        tandaTangan: signatureDataUrl,
+        tandaTangan: ttdUrl,
       });
 
       setStep(5);
