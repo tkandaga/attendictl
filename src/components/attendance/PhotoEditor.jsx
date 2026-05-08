@@ -3,7 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { ArrowRight, ZoomIn, ZoomOut, Move } from 'lucide-react';
 
-const TWIBBON_URL = 'https://media.base44.com/images/public/69fdae0983a85702d2227a8c/aa0d511b7_twibboneictl2026.png';
+const TWIBBON_URL = 'https://media.base44.com/images/public/69fdae0983a85702d2227a8c/5b20a713d_twibbone_ictl2026.png';
+
+// Posisi kotak abu-abu di template (dalam koordinat canvas 500x500)
+// Kotak abu di kiri bawah: approx x=18, y=455, w=215, h=68
+const BOX = { x: 18, y: 455, w: 215, h: 68, pad: 10 };
 
 export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBack }) {
   const canvasRef = useRef(null);
@@ -56,8 +60,52 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBa
     // Draw twibbon on top (PNG with transparency)
     ctx.drawImage(twibbonImg.current, 0, 0, CANVAS_W, CANVAS_H);
 
-    // Teks nama & instansi akan digambar setelah proses twibbon selesai
-    // menggunakan koordinat yang sesuai dengan template
+    // Gambar teks nama & instansi di dalam kotak abu-abu
+    // Clip agar teks tidak keluar kotak
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(BOX.x, BOX.y, BOX.w, BOX.h);
+    ctx.clip();
+
+    // Helper: wrap text agar muat dalam kotak
+    const wrapText = (text, maxWidth, ctx) => {
+      const words = text.split(' ');
+      const lines = [];
+      let line = '';
+      for (const word of words) {
+        const test = line ? line + ' ' + word : word;
+        if (ctx.measureText(test).width > maxWidth) {
+          if (line) lines.push(line);
+          line = word;
+        } else {
+          line = test;
+        }
+      }
+      if (line) lines.push(line);
+      return lines;
+    };
+
+    const maxW = BOX.w - BOX.pad * 2;
+
+    // Nama - bold putih
+    ctx.font = 'bold 16px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'left';
+    const namaLines = wrapText(nama, maxW, ctx);
+    namaLines.forEach((line, i) => {
+      ctx.fillText(line, BOX.x + BOX.pad, BOX.y + BOX.pad + 16 + i * 19);
+    });
+
+    // Instansi - kuning lebih kecil
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#f0b429';
+    const instansiLines = wrapText(instansi, maxW, ctx);
+    const instansiStartY = BOX.y + BOX.pad + 16 + namaLines.length * 19 + 4;
+    instansiLines.forEach((line, i) => {
+      ctx.fillText(line, BOX.x + BOX.pad, instansiStartY + i * 15);
+    });
+
+    ctx.restore();
   }, [loaded, photoPos, photoScale, nama, instansi]);
 
   useEffect(() => { draw(); }, [draw]);
