@@ -5,9 +5,9 @@ import { ArrowRight, ZoomIn, ZoomOut, Move } from 'lucide-react';
 
 const TWIBBON_URL = 'https://media.base44.com/images/public/69fdae0983a85702d2227a8c/d9e29f14b_twibbone-ictl2026.png';
 
-// Template adalah square 1:1. Kotak abu-abu kiri bawah ~x=3%, y=78%, w=43%, h=10%
-// Dalam canvas 500x500: x=15, y=390, w=215, h=50
-const BOX = { x: 15, y: 390, w: 215, h: 50, pad: 8 };
+// Template adalah square 1:1. Kotak abu-abu kiri bawah ~x=3%, y=82%, w=43%, h=12%
+// Dalam canvas 500x500: x=15, y=410, w=215, h=60
+const BOX = { x: 15, y: 410, w: 215, h: 60, pad: 8 };
 
 export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBack }) {
   const canvasRef = useRef(null);

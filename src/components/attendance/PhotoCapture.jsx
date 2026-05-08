@@ -1,26 +1,31 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Camera, Upload, RotateCcw, ArrowRight } from 'lucide-react';
 
 export default function PhotoCapture({ onNext, onBack }) {
   const [photoDataUrl, setPhotoDataUrl] = useState(null);
   const [mode, setMode] = useState('choose'); // choose | camera | preview
+  const [stream, setStream] = useState(null);
   const videoRef = useRef(null);
-  const streamRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  // Pasang stream ke video element setelah mode='camera' dan videoRef siap
+  useEffect(() => {
+    if (mode === 'camera' && stream && videoRef.current) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [mode, stream]);
+
   const startCamera = async () => {
+    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    setStream(s);
     setMode('camera');
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
-    streamRef.current = stream;
-    if (videoRef.current) videoRef.current.srcObject = stream;
   };
 
-  const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop());
-      streamRef.current = null;
-    }
+  const stopCamera = (s) => {
+    const target = s || stream;
+    if (target) target.getTracks().forEach(t => t.stop());
+    setStream(null);
   };
 
   const capturePhoto = () => {
