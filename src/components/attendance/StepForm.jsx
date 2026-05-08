@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { ArrowRight } from 'lucide-react';
 
-export default function StepForm({ onNext }) {
+export default function StepForm({ onNext, isLoading }) {
   const [nama, setNama] = useState('');
   const [instansi, setInstansi] = useState('');
 
@@ -50,8 +50,8 @@ export default function StepForm({ onNext }) {
               required
             />
           </div>
-          <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 text-base">
-            Lanjut — Ambil Foto <ArrowRight className="ml-2 w-4 h-4" />
+          <Button type="submit" disabled={isLoading} className="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 text-base disabled:opacity-60">
+            {isLoading ? 'Memeriksa...' : <> Lanjut — Ambil Foto <ArrowRight className="ml-2 w-4 h-4" /></>}
           </Button>
         </form>
       </div>

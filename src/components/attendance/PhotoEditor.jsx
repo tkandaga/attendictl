@@ -69,9 +69,9 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBa
     const maxW = BOX.w - BOX.pad * 2;
     const centerX = BOX.x + BOX.w / 2;
 
-    // Truncate ke 15 karakter
-    const namaText = nama.length > 15 ? nama.substring(0, 15) : nama;
-    const instansiText = instansi.length > 15 ? instansi.substring(0, 15) : instansi;
+    // Truncate ke 25 karakter
+    const namaText = nama.length > 25 ? nama.substring(0, 25) : nama;
+    const instansiText = instansi.length > 25 ? instansi.substring(0, 25) : instansi;
 
     // Helper: cari ukuran font terbesar yg muat dalam maxW
     const fitFontSize = (text, fontStyle, maxSize, minSize) => {
@@ -82,18 +82,22 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBa
       return minSize;
     };
 
-    // Nama - putih, centered, lebih besar
+    // Hitung total tinggi teks agar bisa di-center vertikal dalam kotak
     const namaSize = fitFontSize(namaText, 'bold', 17, 8);
+    const instansiSize = fitFontSize(instansiText, 'bold', 13, 7);
+    const totalH = namaSize + instansiSize + 6;
+    const startY = BOX.y + (BOX.h - totalH) / 2 + namaSize;
+
+    // Nama - putih, centered
     ctx.font = `bold ${namaSize}px Arial`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    ctx.fillText(namaText, centerX, BOX.y + BOX.pad + namaSize);
+    ctx.fillText(namaText, centerX, startY);
 
-    // Instansi - kuning bold, centered, sedikit lebih kecil
-    const instansiSize = fitFontSize(instansiText, 'bold', 13, 7);
+    // Instansi - kuning bold, centered
     ctx.font = `bold ${instansiSize}px Arial`;
     ctx.fillStyle = '#f0b429';
-    ctx.fillText(instansiText, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 4);
+    ctx.fillText(instansiText, centerX, startY + instansiSize + 6);
 
     ctx.restore();
   }, [loaded, photoPos, photoScale, nama, instansi]);

@@ -14,10 +14,12 @@ export default function Attendance() {
   const [photoDataUrl, setPhotoDataUrl] = useState(null);
   const [compositeDataUrl, setCompositeDataUrl] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
 
   // Step 1: Form
   const handleFormNext = async ({ nama, instansi }) => {
-    // Check duplicate
+    if (isChecking) return;
+    setIsChecking(true);
     try {
       const res = await base44.functions.invoke('submitAttendance', { action: 'checkDuplicate', nama });
       if (res.data?.exists) {
@@ -28,11 +30,14 @@ export default function Attendance() {
         });
         return;
       }
+      setFormData({ nama, instansi });
+      setStep(2);
     } catch (e) {
-      // if check fails, still allow proceed
+      setFormData({ nama, instansi });
+      setStep(2);
+    } finally {
+      setIsChecking(false);
     }
-    setFormData({ nama, instansi });
-    setStep(2);
   };
 
   // Step 2: Photo capture
@@ -90,7 +95,7 @@ export default function Attendance() {
 
   return (
     <>
-      {step === 1 && <StepForm onNext={handleFormNext} />}
+      {step === 1 && <StepForm onNext={handleFormNext} isLoading={isChecking} />}
       {step === 2 && <PhotoCapture onNext={handlePhotoNext} onBack={() => setStep(1)} />}
       {step === 3 && (
         <PhotoEditor
