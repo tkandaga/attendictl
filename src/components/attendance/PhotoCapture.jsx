@@ -13,11 +13,15 @@ export default function PhotoCapture({ onNext, onBack }) {
   useEffect(() => {
     if (mode === 'camera' && stream && videoRef.current) {
       videoRef.current.srcObject = stream;
+      videoRef.current.play().catch(() => {});
     }
   }, [mode, stream]);
 
   const startCamera = async () => {
-    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    const s = await navigator.mediaDevices.getUserMedia({ 
+      video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 720 } }, 
+      audio: false 
+    });
     setStream(s);
     setMode('camera');
   };
@@ -79,19 +83,17 @@ export default function PhotoCapture({ onNext, onBack }) {
           </div>
         )}
 
-        {mode === 'camera' && (
-          <div className="space-y-4">
-            <video ref={videoRef} autoPlay playsInline className="w-full rounded-xl aspect-[3/4] object-cover bg-gray-900" />
-            <div className="flex gap-3">
-              <Button onClick={reset} variant="outline" className="flex-1">
-                <RotateCcw className="mr-2 w-4 h-4" /> Batal
-              </Button>
-              <Button onClick={capturePhoto} className="flex-1 bg-purple-700 hover:bg-purple-800 text-white">
-                <Camera className="mr-2 w-4 h-4" /> Ambil Foto
-              </Button>
-            </div>
+        <div className={mode === 'camera' ? 'space-y-4' : 'hidden'}>
+          <video ref={videoRef} autoPlay playsInline muted className="w-full rounded-xl aspect-[3/4] object-cover bg-gray-900" />
+          <div className="flex gap-3">
+            <Button onClick={reset} variant="outline" className="flex-1">
+              <RotateCcw className="mr-2 w-4 h-4" /> Batal
+            </Button>
+            <Button onClick={capturePhoto} className="flex-1 bg-purple-700 hover:bg-purple-800 text-white">
+              <Camera className="mr-2 w-4 h-4" /> Ambil Foto
+            </Button>
           </div>
-        )}
+        </div>
 
         {mode === 'preview' && (
           <div className="space-y-4">
