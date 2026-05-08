@@ -71,7 +71,7 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBa
 
     // Potong max 15 karakter
     const namaText = nama.length > 15 ? nama.slice(0, 15) : nama;
-    const instansiText = instansi.length > 15 ? instansi.slice(0, 15) : instansi;
+    const instansiText = instansi.length > 25 ? instansi.slice(0, 25) : instansi;
 
     // Helper: cari ukuran font terbesar yg muat dalam maxW
     const fitFontSize = (text, fontStyle, maxSize, minSize) => {
