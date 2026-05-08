@@ -1,0 +1,39 @@
+import { Button } from '@/components/ui/button';
+import { Download, CheckCircle } from 'lucide-react';
+
+export default function NametageResult({ compositeDataUrl, nama }) {
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.download = `nametag-ictl2026-${nama.replace(/\s+/g, '-')}.png`;
+    link.href = compositeDataUrl;
+    link.click();
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-purple-700 to-indigo-800 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <CheckCircle className="w-7 h-7 text-green-500" />
+          <h2 className="text-2xl font-bold text-purple-900">Berhasil Daftar!</h2>
+        </div>
+        <p className="text-gray-500 text-sm mb-5">Data kamu telah tersimpan. Berikut nametag ICTL 2026 milikmu:</p>
+
+        <img
+          src={compositeDataUrl}
+          alt="Nametag"
+          className="w-full rounded-xl shadow-lg border border-gray-100 mb-5"
+        />
+
+        <Button
+          onClick={handleDownload}
+          className="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 text-base"
+        >
+          <Download className="mr-2 w-5 h-5" /> Download Nametag
+        </Button>
+        <p className="text-xs text-gray-400 mt-3">
+          Bagikan nametag ini di media sosialmu! #ICTL2026
+        </p>
+      </div>
+    </div>
+  );
+}

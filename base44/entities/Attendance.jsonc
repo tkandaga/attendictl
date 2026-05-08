@@ -1,0 +1,22 @@
+{
+  "name": "Attendance",
+  "type": "object",
+  "properties": {
+    "nama": {
+      "type": "string"
+    },
+    "instansi": {
+      "type": "string"
+    },
+    "foto_url": {
+      "type": "string"
+    },
+    "tanda_tangan": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "nama",
+    "instansi"
+  ]
+}
