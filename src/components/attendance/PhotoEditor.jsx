@@ -59,56 +59,35 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBa
     // Draw twibbon on top (PNG with transparency)
     ctx.drawImage(twibbonImg.current, 0, 0, CANVAS_W, CANVAS_H);
 
-    // DEBUG: gambar border merah untuk lihat posisi BOX
-    ctx.save();
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(BOX.x, BOX.y, BOX.w, BOX.h);
-    ctx.restore();
-
     // Gambar teks nama & instansi di dalam kotak abu-abu
     ctx.save();
     ctx.beginPath();
     ctx.rect(BOX.x, BOX.y, BOX.w, BOX.h);
     ctx.clip();
 
-    // Helper: wrap text agar muat dalam kotak
-    const wrapText = (text, maxWidth, ctx) => {
-      const words = text.split(' ');
-      const lines = [];
-      let line = '';
-      for (const word of words) {
-        const test = line ? line + ' ' + word : word;
-        if (ctx.measureText(test).width > maxWidth) {
-          if (line) lines.push(line);
-          line = word;
-        } else {
-          line = test;
-        }
-      }
-      if (line) lines.push(line);
-      return lines;
-    };
-
     const maxW = BOX.w - BOX.pad * 2;
 
-    // Nama - bold putih
-    ctx.font = 'bold 16px Arial';
+    // Helper: cari ukuran font terbesar yg muat dalam maxW (single line)
+    const fitFontSize = (text, bold, maxSize, minSize) => {
+      for (let size = maxSize; size >= minSize; size--) {
+        ctx.font = `${bold ? 'bold ' : ''}${size}px Arial`;
+        if (ctx.measureText(text).width <= maxW) return size;
+      }
+      return minSize;
+    };
+
+    // Nama - bold putih, auto shrink dari 16px min 8px
+    const namaSize = fitFontSize(nama, true, 16, 8);
+    ctx.font = `bold ${namaSize}px Arial`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
-    const namaLines = wrapText(nama, maxW, ctx);
-    namaLines.forEach((line, i) => {
-      ctx.fillText(line, BOX.x + BOX.pad, BOX.y + BOX.pad + 16 + i * 19);
-    });
+    ctx.fillText(nama, BOX.x + BOX.pad, BOX.y + BOX.pad + namaSize);
 
-    // Instansi - kuning lebih kecil
-    ctx.font = '12px Arial';
+    // Instansi - kuning, auto shrink dari 13px min 7px
+    const instansiSize = fitFontSize(instansi, false, 13, 7);
+    ctx.font = `${instansiSize}px Arial`;
     ctx.fillStyle = '#f0b429';
-    const instansiLines = wrapText(instansi, maxW, ctx);
-    const instansiStartY = BOX.y + BOX.pad + 16 + namaLines.length * 19 + 4;
-    instansiLines.forEach((line, i) => {
-      ctx.fillText(line, BOX.x + BOX.pad, instansiStartY + i * 15);
-    });
+    ctx.fillText(instansi, BOX.x + BOX.pad, BOX.y + BOX.pad + namaSize + instansiSize + 4);
 
     ctx.restore();
   }, [loaded, photoPos, photoScale, nama, instansi]);
