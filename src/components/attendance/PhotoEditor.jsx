@@ -56,20 +56,8 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBa
     // Draw twibbon on top (PNG with transparency)
     ctx.drawImage(twibbonImg.current, 0, 0, CANVAS_W, CANVAS_H);
 
-    // Draw nama & instansi over the dark badge area (bottom-left)
-    ctx.save();
-    // Nama
-    ctx.font = 'bold 18px Arial';
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'left';
-    const namaText = nama.length > 22 ? nama.substring(0, 22) + '...' : nama;
-    ctx.fillText(namaText, 36, 342);
-    // Instansi
-    ctx.font = '13px Arial';
-    ctx.fillStyle = '#f0b429';
-    const instansiText = instansi.length > 28 ? instansi.substring(0, 28) + '...' : instansi;
-    ctx.fillText(instansiText, 36, 362);
-    ctx.restore();
+    // Teks nama & instansi akan digambar setelah proses twibbon selesai
+    // menggunakan koordinat yang sesuai dengan template
   }, [loaded, photoPos, photoScale, nama, instansi]);
 
   useEffect(() => { draw(); }, [draw]);
