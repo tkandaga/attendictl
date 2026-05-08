@@ -1,42 +1,42 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Camera, Upload, RotateCcw, ArrowRight } from 'lucide-react';
 
 export default function PhotoCapture({ onNext, onBack }) {
   const [photoDataUrl, setPhotoDataUrl] = useState(null);
   const [mode, setMode] = useState('choose'); // choose | camera | preview
-  const [stream, setStream] = useState(null);
-  const videoRef = useRef(null);
+  const streamRef = useRef(null);
   const fileInputRef = useRef(null);
-
-  // Pasang stream ke video element setelah mode='camera' dan videoRef siap
-  useEffect(() => {
-    if (mode === 'camera' && stream && videoRef.current) {
-      videoRef.current.srcObject = stream;
-      videoRef.current.play().catch(() => {});
-    }
-  }, [mode, stream]);
 
   const startCamera = async () => {
     const s = await navigator.mediaDevices.getUserMedia({ 
-      video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 720 } }, 
+      video: { facingMode: 'user' }, 
       audio: false 
     });
-    setStream(s);
+    streamRef.current = s;
     setMode('camera');
   };
 
-  const stopCamera = (s) => {
-    const target = s || stream;
-    if (target) target.getTracks().forEach(t => t.stop());
-    setStream(null);
+  // Callback ref: dipanggil saat elemen video muncul di DOM
+  const videoCallbackRef = (videoEl) => {
+    if (videoEl && streamRef.current) {
+      videoEl.srcObject = streamRef.current;
+      videoEl.play().catch(() => {});
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+    }
   };
 
   const capturePhoto = () => {
-    const video = videoRef.current;
+    const video = document.querySelector('video');
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 640;
     canvas.getContext('2d').drawImage(video, 0, 0);
     setPhotoDataUrl(canvas.toDataURL('image/jpeg', 0.9));
     stopCamera();
@@ -83,21 +83,29 @@ export default function PhotoCapture({ onNext, onBack }) {
           </div>
         )}
 
-        <div className={mode === 'camera' ? 'space-y-4' : 'hidden'}>
-          <video ref={videoRef} autoPlay playsInline muted className="w-full rounded-xl aspect-[3/4] object-cover bg-gray-900" />
-          <div className="flex gap-3">
-            <Button onClick={reset} variant="outline" className="flex-1">
-              <RotateCcw className="mr-2 w-4 h-4" /> Batal
-            </Button>
-            <Button onClick={capturePhoto} className="flex-1 bg-purple-700 hover:bg-purple-800 text-white">
-              <Camera className="mr-2 w-4 h-4" /> Ambil Foto
-            </Button>
+        {mode === 'camera' && (
+          <div className="space-y-4">
+            <video 
+              ref={videoCallbackRef}
+              autoPlay 
+              playsInline 
+              muted
+              className="w-full rounded-xl aspect-square object-cover bg-gray-900" 
+            />
+            <div className="flex gap-3">
+              <Button onClick={reset} variant="outline" className="flex-1">
+                <RotateCcw className="mr-2 w-4 h-4" /> Batal
+              </Button>
+              <Button onClick={capturePhoto} className="flex-1 bg-purple-700 hover:bg-purple-800 text-white">
+                <Camera className="mr-2 w-4 h-4" /> Ambil Foto
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
 
         {mode === 'preview' && (
           <div className="space-y-4">
-            <img src={photoDataUrl} alt="preview" className="w-full rounded-xl aspect-[3/4] object-cover" />
+            <img src={photoDataUrl} alt="preview" className="w-full rounded-xl aspect-square object-cover" />
             <div className="flex gap-3">
               <Button onClick={reset} variant="outline" className="flex-1">
                 <RotateCcw className="mr-2 w-4 h-4" /> Ulangi
