@@ -89,11 +89,25 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBa
     ctx.textAlign = 'center';
     ctx.fillText(namaText, centerX, BOX.y + BOX.pad + namaSize + 8);
 
-    // Instansi - kuning bold, centered, auto shrink 14px→7px
-    const instansiSize = fitFontSize(instansiText, 'bold', 14, 7);
+    // Instansi - kuning bold, centered, auto shrink 14px→6px (lebih agresif agar teks panjang muat)
+    const instansiSize = fitFontSize(instansiText, 'bold', 14, 6);
     ctx.font = `bold ${instansiSize}px Arial`;
     ctx.fillStyle = '#f0b429';
-    ctx.fillText(instansiText, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 18);
+    // Jika masih tidak muat dalam 1 baris, split jadi 2 baris
+    const instansiW = ctx.measureText(instansiText).width;
+    if (instansiW <= maxW) {
+      ctx.fillText(instansiText, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 18);
+    } else {
+      // Split di tengah kata
+      const mid = Math.ceil(instansiText.length / 2);
+      const spaceIdx = instansiText.indexOf(' ', mid - 5);
+      const splitAt = spaceIdx > 0 ? spaceIdx : mid;
+      const line1 = instansiText.slice(0, splitAt).trim();
+      const line2 = instansiText.slice(splitAt).trim();
+      const lineH = instansiSize + 2;
+      ctx.fillText(line1, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 14);
+      ctx.fillText(line2, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 14 + lineH);
+    }
 
     ctx.restore();
   }, [loaded, photoPos, photoScale, nama, instansi]);
