@@ -63,9 +63,16 @@ export default function Attendance() {
       // Upload tanda tangan ke storage
       let ttdUrl = '';
       if (signatureDataUrl) {
-        const blob = await (await fetch(signatureDataUrl)).blob();
-        const file = new File([blob], 'ttd.png', { type: 'image/png' });
-        const uploadRes = await base44.integrations.Core.UploadFile({ file });
+        // Convert base64 dataURL to blob manually
+        const base64Data = signatureDataUrl.split(',')[1];
+        const byteCharacters = atob(base64Data);
+        const byteArray = new Uint8Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteArray[i] = byteCharacters.charCodeAt(i);
+        }
+        const ttdBlob = new Blob([byteArray], { type: 'image/png' });
+        const ttdFile = new File([ttdBlob], 'ttd.png', { type: 'image/png' });
+        const uploadRes = await base44.integrations.Core.UploadFile({ file: ttdFile });
         ttdUrl = uploadRes.file_url || '';
       }
 
