@@ -114,6 +114,7 @@ export default function Attendance() {
           photoDataUrl={photoDataUrl}
           nama={formData.nama}
           instansi={formData.instansi}
+          role={formData.role}
           onNext={handleEditorNext}
           onBack={() => setStep(2)}
         />

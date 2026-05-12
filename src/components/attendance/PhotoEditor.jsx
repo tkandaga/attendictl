@@ -9,7 +9,7 @@ const TWIBBON_URL = 'https://media.base44.com/images/public/69fdae0983a85702d222
 // ~x=3%, y=79%, w=42%, h=10% dari canvas 500px
 const BOX = { x: 15, y: 395, w: 210, h: 75, pad: 12 };
 
-export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBack }) {
+export default function PhotoEditor({ photoDataUrl, nama, instansi, role, onNext, onBack }) {
   const canvasRef = useRef(null);
   const [photoPos, setPhotoPos] = useState({ x: 0, y: 0 });
   const [photoScale, setPhotoScale] = useState(1);
@@ -109,8 +109,16 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, onNext, onBa
       ctx.fillText(line2, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 14 + lineH);
     }
 
+    // Role - putih italic, centered, ukuran kecil di bawah instansi
+    if (role) {
+      const roleSize = fitFontSize(role, 'italic', 12, 6);
+      ctx.font = `italic ${roleSize}px Arial`;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(role, centerX, BOX.y + BOX.h - BOX.pad);
+    }
+
     ctx.restore();
-  }, [loaded, photoPos, photoScale, nama, instansi]);
+  }, [loaded, photoPos, photoScale, nama, instansi, role]);
 
   useEffect(() => { draw(); }, [draw]);
 
