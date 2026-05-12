@@ -7,7 +7,7 @@ const TWIBBON_URL = 'https://media.base44.com/images/public/69fdae0983a85702d222
 
 // Template portrait: canvas 500x500, kotak abu di kiri bawah
 // ~x=3%, y=79%, w=42%, h=10% dari canvas 500px
-const BOX = { x: 15, y: 395, w: 210, h: 75, pad: 12 };
+const BOX = { x: 15, y: 380, w: 210, h: 100, pad: 10 };
 
 export default function PhotoEditor({ photoDataUrl, nama, instansi, role, onNext, onBack }) {
   const canvasRef = useRef(null);
@@ -82,39 +82,43 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, role, onNext
       return minSize;
     };
 
-    // Nama - putih, centered, auto shrink 18px→8px
+    // Hitung ukuran font dulu
     const namaSize = fitFontSize(namaText, 'bold', 18, 8);
+    const instansiSize = fitFontSize(instansiText, 'bold', 13, 6);
+    const roleSize = role ? fitFontSize(role, 'italic', 11, 6) : 0;
+
+    // Layout: 3 baris dengan jarak merata
+    const totalH = namaSize + instansiSize + (role ? roleSize + 4 : 0) + 4;
+    const startY = BOX.y + (BOX.h - totalH) / 2 + namaSize;
+
+    // Nama - putih bold
     ctx.font = `bold ${namaSize}px Arial`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    ctx.fillText(namaText, centerX, BOX.y + BOX.pad + namaSize + 8);
+    ctx.fillText(namaText, centerX, startY);
 
-    // Instansi - kuning bold, centered, auto shrink 14px→6px (lebih agresif agar teks panjang muat)
-    const instansiSize = fitFontSize(instansiText, 'bold', 14, 6);
+    // Instansi - kuning bold
     ctx.font = `bold ${instansiSize}px Arial`;
     ctx.fillStyle = '#f0b429';
-    // Jika masih tidak muat dalam 1 baris, split jadi 2 baris
     const instansiW = ctx.measureText(instansiText).width;
+    const instansiY = startY + namaSize + 4;
     if (instansiW <= maxW) {
-      ctx.fillText(instansiText, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 18);
+      ctx.fillText(instansiText, centerX, instansiY);
     } else {
-      // Split di tengah kata
       const mid = Math.ceil(instansiText.length / 2);
       const spaceIdx = instansiText.indexOf(' ', mid - 5);
       const splitAt = spaceIdx > 0 ? spaceIdx : mid;
       const line1 = instansiText.slice(0, splitAt).trim();
       const line2 = instansiText.slice(splitAt).trim();
-      const lineH = instansiSize + 2;
-      ctx.fillText(line1, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 14);
-      ctx.fillText(line2, centerX, BOX.y + BOX.pad + namaSize + instansiSize + 14 + lineH);
+      ctx.fillText(line1, centerX, instansiY);
+      ctx.fillText(line2, centerX, instansiY + instansiSize + 2);
     }
 
-    // Role - putih italic, centered, ukuran kecil di bawah instansi
+    // Role - putih italic
     if (role) {
-      const roleSize = fitFontSize(role, 'italic', 12, 6);
       ctx.font = `italic ${roleSize}px Arial`;
       ctx.fillStyle = '#ffffff';
-      ctx.fillText(role, centerX, BOX.y + BOX.h - BOX.pad);
+      ctx.fillText(role, centerX, instansiY + instansiSize + roleSize + 6);
     }
 
     ctx.restore();
