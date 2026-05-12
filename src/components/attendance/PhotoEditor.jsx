@@ -118,7 +118,7 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, role, onNext
     if (role) {
       ctx.font = `italic ${roleSize}px Arial`;
       ctx.fillStyle = '#ffffff';
-      ctx.fillText(role, centerX, instansiY + instansiSize + roleSize + 2);
+      ctx.fillText(role, centerX, instansiY + instansiSize + 3);
     }
 
     ctx.restore();
