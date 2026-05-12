@@ -26,7 +26,7 @@ export default function StepForm({ onNext }) {
             className="h-12 mx-auto mb-4 object-contain"
           />
           <h1 className="text-2xl font-bold text-purple-900">Daftar Hadir</h1>
-          <p className="text-gray-500 text-sm mt-1">ICTL 2026 — International Conference on Teaching and Learning</p>
+          <p className="text-gray-500 text-sm mt-1">ICTL 2026 · International Conference on Teaching and Learning</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
