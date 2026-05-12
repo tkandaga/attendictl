@@ -101,7 +101,7 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, role, onNext
     ctx.font = `bold ${instansiSize}px Arial`;
     ctx.fillStyle = '#f0b429';
     const instansiW = ctx.measureText(instansiText).width;
-    const instansiY = startY + namaSize + 4;
+    const instansiY = startY + namaSize + 10;
     if (instansiW <= maxW) {
       ctx.fillText(instansiText, centerX, instansiY);
     } else {
@@ -114,11 +114,11 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, role, onNext
       ctx.fillText(line2, centerX, instansiY + instansiSize + 2);
     }
 
-    // Role - putih italic
+    // Role - putih italic, rapat di bawah instansi
     if (role) {
       ctx.font = `italic ${roleSize}px Arial`;
       ctx.fillStyle = '#ffffff';
-      ctx.fillText(role, centerX, instansiY + instansiSize + roleSize + 6);
+      ctx.fillText(role, centerX, instansiY + instansiSize + roleSize + 2);
     }
 
     ctx.restore();
