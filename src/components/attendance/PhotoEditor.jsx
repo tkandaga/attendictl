@@ -101,7 +101,7 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, role, onNext
     ctx.font = `bold ${instansiSize}px Arial`;
     ctx.fillStyle = '#f0b429';
     const instansiW = ctx.measureText(instansiText).width;
-    const instansiY = startY + namaSize + 10;
+    const instansiY = startY + namaSize + 4;
     if (instansiW <= maxW) {
       ctx.fillText(instansiText, centerX, instansiY);
     } else {
@@ -118,7 +118,7 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, role, onNext
     if (role) {
       ctx.font = `italic ${roleSize}px Arial`;
       ctx.fillStyle = '#ffffff';
-      ctx.fillText(role, centerX, instansiY + instansiSize + 3);
+      ctx.fillText(role, centerX, instansiY + instansiSize + 2);
     }
 
     ctx.restore();
