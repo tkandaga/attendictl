@@ -2,16 +2,18 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowRight } from 'lucide-react';
 
 export default function StepForm({ onNext }) {
   const [nama, setNama] = useState('');
   const [instansi, setInstansi] = useState('');
+  const [role, setRole] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!nama.trim() || !instansi.trim()) return;
-    onNext({ nama: nama.trim(), instansi: instansi.trim() });
+    if (!nama.trim() || !instansi.trim() || !role) return;
+    onNext({ nama: nama.trim(), instansi: instansi.trim(), role });
   };
 
   return (
@@ -50,7 +52,24 @@ export default function StepForm({ onNext }) {
               required
             />
           </div>
-          <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 text-base">
+          <div>
+            <Label className="text-gray-700 font-medium">Role</Label>
+            <Select onValueChange={setRole} value={role} required>
+              <SelectTrigger className="mt-1 w-full">
+                <SelectValue placeholder="Pilih role Anda" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Presenter">Presenter</SelectItem>
+                <SelectItem value="Participant">Participant</SelectItem>
+                <SelectItem value="Committee">Committee</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            type="submit"
+            disabled={!nama.trim() || !instansi.trim() || !role}
+            className="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 text-base disabled:opacity-50"
+          >
             Lanjut — Ambil Foto <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         </form>

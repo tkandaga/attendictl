@@ -10,13 +10,13 @@ import NametageResult from '@/components/attendance/NametageResult';
 export default function Attendance() {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({ nama: '', instansi: '' });
+  const [formData, setFormData] = useState({ nama: '', instansi: '', role: '' });
   const [photoDataUrl, setPhotoDataUrl] = useState(null);
   const [compositeDataUrl, setCompositeDataUrl] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Step 1: Form
-  const handleFormNext = async ({ nama, instansi }) => {
+  const handleFormNext = async ({ nama, instansi, role }) => {
     // Check duplicate
     try {
       const res = await base44.functions.invoke('submitAttendance', { action: 'checkDuplicate', nama });
@@ -31,7 +31,7 @@ export default function Attendance() {
     } catch (e) {
       // if check fails, still allow proceed
     }
-    setFormData({ nama, instansi });
+    setFormData({ nama, instansi, role });
     setStep(2);
   };
 
@@ -81,6 +81,7 @@ export default function Attendance() {
         action: 'append',
         nama: formData.nama,
         instansi: formData.instansi,
+        role: formData.role,
         fotoUrl,
         tandaTangan: ttdUrl,
       });

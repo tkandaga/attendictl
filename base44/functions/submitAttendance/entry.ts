@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('googlesheets');
 
     const body = await req.json();
-    const { nama, instansi, tandaTangan, fotoUrl, action } = body;
+    const { nama, instansi, role, tandaTangan, fotoUrl, action } = body;
 
     const sheetsBase = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}`;
     const headers = { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' };
@@ -26,20 +26,20 @@ Deno.serve(async (req) => {
 
     // APPEND DATA
     const timestamp = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
-    const values = [[timestamp, nama, instansi, fotoUrl || '', tandaTangan || '']];
+    const values = [[timestamp, nama, instansi, role || '', fotoUrl || '', tandaTangan || '']];
 
     // Ensure header row exists
-    const headerRes = await fetch(`${sheetsBase}/values/${SHEET_NAME}!A1:E1`, { headers });
+    const headerRes = await fetch(`${sheetsBase}/values/${SHEET_NAME}!A1:F1`, { headers });
     const headerData = await headerRes.json();
     if (!headerData.values || headerData.values.length === 0) {
-      await fetch(`${sheetsBase}/values/${SHEET_NAME}!A1:E1?valueInputOption=RAW`, {
+      await fetch(`${sheetsBase}/values/${SHEET_NAME}!A1:F1?valueInputOption=RAW`, {
         method: 'PUT',
         headers,
-        body: JSON.stringify({ values: [['Timestamp', 'Nama', 'Instansi', 'Foto URL', 'Tanda Tangan']] })
+        body: JSON.stringify({ values: [['Timestamp', 'Nama', 'Instansi', 'Role', 'Foto URL', 'Tanda Tangan']] })
       });
     }
 
-    const appendRes = await fetch(`${sheetsBase}/values/${SHEET_NAME}!A:E:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, {
+    const appendRes = await fetch(`${sheetsBase}/values/${SHEET_NAME}!A:F:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ values })
