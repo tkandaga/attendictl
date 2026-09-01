@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
-const SPREADSHEET_ID = '171KjTvffFn6GQ1ceIYX9Ue0HzcPusQoB515xA7xHWP4';
+const DEFAULT_SPREADSHEET_ID = '171KjTvffFn6GQ1ceIYX9Ue0HzcPusQoB515xA7xHWP4';
 const SHEET_NAME = 'Sheet1';
 
 Deno.serve(async (req) => {
@@ -8,10 +8,19 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('googlesheets');
 
+    // Get spreadsheet ID from settings (fallback to default)
+    let spreadsheetId = DEFAULT_SPREADSHEET_ID;
+    try {
+      const settings = await base44.entities.Setting.filter({ key: 'gsheet_id' });
+      if (settings.length && settings[0].value) {
+        spreadsheetId = settings[0].value;
+      }
+    } catch (e) {}
+
     const body = await req.json();
     const { nama, instansi, role, tandaTangan, fotoUrl, action } = body;
 
-    const sheetsBase = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}`;
+    const sheetsBase = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}`;
     const headers = { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' };
 
     // CHECK DUPLICATE

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { useSettings, DEFAULTS } from '@/lib/SettingsContext';
-import { Save, Upload, Settings as SettingsIcon, Palette } from 'lucide-react';
+import { Save, Upload, Settings as SettingsIcon, Palette, FileSpreadsheet } from 'lucide-react';
 
 export default function SettingsSection() {
   const { toast } = useToast();
@@ -14,7 +14,8 @@ export default function SettingsSection() {
     conference_name: settings.conference_name,
     conference_subtitle: settings.conference_subtitle,
     logo_url: settings.logo_url,
-    theme_color: settings.theme_color
+    theme_color: settings.theme_color,
+    gsheet_url: settings.gsheet_url || ''
   });
   const [saving, setSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -24,9 +25,10 @@ export default function SettingsSection() {
       conference_name: settings.conference_name,
       conference_subtitle: settings.conference_subtitle,
       logo_url: settings.logo_url,
-      theme_color: settings.theme_color
+      theme_color: settings.theme_color,
+      gsheet_url: settings.gsheet_url || ''
     });
-  }, [settings.conference_name, settings.conference_subtitle, settings.logo_url, settings.theme_color]);
+  }, [settings.conference_name, settings.conference_subtitle, settings.logo_url, settings.theme_color, settings.gsheet_url]);
 
   const upsertSetting = async (key, value) => {
     const existing = await base44.entities.Setting.filter({ key });
@@ -40,11 +42,20 @@ export default function SettingsSection() {
   const handleSave = async () => {
     setSaving(true);
     try {
+      // Extract sheet ID from URL
+      let gsheetId = '';
+      if (form.gsheet_url) {
+        const match = form.gsheet_url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+        gsheetId = match ? match[1] : form.gsheet_url; // allow raw ID too
+      }
+
       const entries = [
         ['conference_name', form.conference_name || DEFAULTS.conference_name],
         ['conference_subtitle', form.conference_subtitle || DEFAULTS.conference_subtitle],
         ['theme_color', form.theme_color || DEFAULTS.theme_color],
-        ['logo_url', form.logo_url || DEFAULTS.logo_url]
+        ['logo_url', form.logo_url || DEFAULTS.logo_url],
+        ['gsheet_id', gsheetId],
+        ['gsheet_url', form.gsheet_url || '']
       ];
       for (const [key, value] of entries) {
         await upsertSetting(key, value);
@@ -141,6 +152,19 @@ export default function SettingsSection() {
             />
           </div>
           <p className="text-xs text-gray-500 mt-1">Warna utama tombol, header, dan background gradient.</p>
+        </div>
+
+        <div>
+          <Label className="text-gray-700 font-medium flex items-center gap-1">
+            <FileSpreadsheet className="w-3.5 h-3.5" /> Google Sheet Link
+          </Label>
+          <Input
+            value={form.gsheet_url}
+            onChange={(e) => setForm({ ...form, gsheet_url: e.target.value })}
+            className="mt-1"
+            placeholder="https://docs.google.com/spreadsheets/d/xxxxx/edit"
+          />
+          <p className="text-xs text-gray-500 mt-1">Tempat data pendaftaran tersimpan. Paste link Google Sheet kamu di sini.</p>
         </div>
 
         <Button onClick={handleSave} disabled={saving} className="bg-purple-700 hover:bg-purple-800 text-white">
