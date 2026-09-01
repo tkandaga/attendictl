@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { Upload, LogOut, Trash2, Image as ImageIcon, Users, Search } from 'lucide-react';
+import SettingsSection from '@/components/admin/SettingsSection';
 
 export default function AdminPanel({ onLogout }) {
   const { toast } = useToast();
@@ -158,6 +159,9 @@ export default function AdminPanel({ onLogout }) {
       </header>
 
       <main className="max-w-5xl mx-auto p-4 sm:p-6 space-y-6">
+        {/* Conference settings */}
+        <SettingsSection />
+
         {/* Twibbon upload */}
         <section className="bg-white rounded-xl shadow-sm border p-5">
           <div className="flex items-center gap-2 mb-3">

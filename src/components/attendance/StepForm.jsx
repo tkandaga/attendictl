@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { ArrowRight } from 'lucide-react';
 import ParticipantCombobox from '@/components/attendance/ParticipantCombobox';
+import { useSettings } from '@/lib/SettingsContext';
 
 export default function StepForm({ onNext }) {
+  const settings = useSettings();
   const [participants, setParticipants] = useState([]);
   const [selectedId, setSelectedId] = useState('');
   const [loading, setLoading] = useState(true);
@@ -29,12 +31,12 @@ export default function StepForm({ onNext }) {
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <img
-            src="https://media.base44.com/images/public/69fdae0983a85702d2227a8c/a107637de_1UT-ICTL_logo_blue-1024x211.webp"
-            alt="ICTL Logo"
+            src={settings.logo_url}
+            alt="Logo"
             className="h-12 mx-auto mb-4 object-contain"
           />
           <h1 className="text-2xl font-bold text-purple-900">Daftar Hadir</h1>
-          <p className="text-gray-500 text-sm mt-1">ICTL 2026 · International Conference on Teaching and Learning</p>
+          <p className="text-gray-500 text-sm mt-1">{settings.conference_name} · {settings.conference_subtitle}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">

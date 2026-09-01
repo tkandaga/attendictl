@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --brand: #7e22ce;
+  --brand-50: color-mix(in srgb, var(--brand) 10%, white);
+  --brand-100: color-mix(in srgb, var(--brand) 20%, white);
+  --brand-200: color-mix(in srgb, var(--brand) 35%, white);
+  --brand-300: color-mix(in srgb, var(--brand) 50%, white);
+  --brand-400: color-mix(in srgb, var(--brand) 65%, white);
+  --brand-500: var(--brand);
+  --brand-600: color-mix(in srgb, var(--brand) 92%, black);
+  --brand-700: var(--brand);
+  --brand-800: color-mix(in srgb, var(--brand) 82%, black);
+  --brand-900: color-mix(in srgb, var(--brand) 68%, black);
+  --brand-950: color-mix(in srgb, var(--brand) 55%, black);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

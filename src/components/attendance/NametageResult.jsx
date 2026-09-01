@@ -1,10 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { Download, CheckCircle } from 'lucide-react';
+import { useSettings } from '@/lib/SettingsContext';
 
 export default function NametageResult({ compositeDataUrl, nama }) {
+  const settings = useSettings();
+  const confTag = (settings.conference_name || 'ICTL2026').replace(/\s+/g, '');
+
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.download = `nametag-ictl2026-${nama.replace(/\s+/g, '-')}.png`;
+    link.download = `nametag-${confTag.toLowerCase()}-${nama.replace(/\s+/g, '-')}.png`;
     link.href = compositeDataUrl;
     link.click();
   };
@@ -16,7 +20,7 @@ export default function NametageResult({ compositeDataUrl, nama }) {
           <CheckCircle className="w-7 h-7 text-green-500" />
           <h2 className="text-2xl font-bold text-purple-900">Berhasil Daftar!</h2>
         </div>
-        <p className="text-gray-500 text-sm mb-5">Data kamu telah tersimpan. Berikut nametag ICTL 2026 milikmu:</p>
+        <p className="text-gray-500 text-sm mb-5">Data kamu telah tersimpan. Berikut nametag {settings.conference_name} milikmu:</p>
 
         <img
           src={compositeDataUrl}
@@ -31,7 +35,7 @@ export default function NametageResult({ compositeDataUrl, nama }) {
           <Download className="mr-2 w-5 h-5" /> Download Nametag
         </Button>
         <p className="text-xs text-gray-400 mt-3">
-          Bagikan nametag ini di media sosialmu! #ICTL2026
+          Bagikan nametag ini di media sosialmu! #{confTag}
         </p>
       </div>
     </div>

@@ -3,8 +3,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Lock } from 'lucide-react';
+import { useSettings } from '@/lib/SettingsContext';
 
 export default function AdminLogin({ onSuccess }) {
+  const settings = useSettings();
   const [u, setU] = useState('');
   const [p, setP] = useState('');
   const [err, setErr] = useState('');
@@ -27,7 +29,7 @@ export default function AdminLogin({ onSuccess }) {
             <Lock className="w-6 h-6 text-purple-700" />
           </div>
           <h1 className="text-xl font-bold text-purple-900">Admin Login</h1>
-          <p className="text-gray-500 text-sm mt-1">ICTL 2026 · Panel Admin</p>
+          <p className="text-gray-500 text-sm mt-1">{settings.conference_name} · Panel Admin</p>
         </div>
 
         <form onSubmit={submit} className="space-y-4">
