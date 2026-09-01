@@ -1,19 +1,27 @@
-import { useState } from 'react';
-import { Input } from '@/components/ui/input';
+import { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowRight } from 'lucide-react';
+import ParticipantCombobox from '@/components/attendance/ParticipantCombobox';
 
 export default function StepForm({ onNext }) {
-  const [nama, setNama] = useState('');
-  const [instansi, setInstansi] = useState('');
-  const [role, setRole] = useState('');
+  const [participants, setParticipants] = useState([]);
+  const [selectedId, setSelectedId] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    base44.entities.Participant.list('-created_date', 1000)
+      .then(setParticipants)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!nama.trim() || !instansi.trim() || !role) return;
-    onNext({ nama: nama.trim(), instansi: instansi.trim(), role });
+    const p = participants.find((x) => x.id === selectedId);
+    if (!p) return;
+    onNext({ nama: p.nama, instansi: p.instansi || '', role: p.role });
   };
 
   return (
@@ -31,43 +39,26 @@ export default function StepForm({ onNext }) {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <Label htmlFor="nama" className="text-gray-700 font-medium">Nama Lengkap</Label>
-            <Input
-              id="nama"
-              value={nama}
-              onChange={e => setNama(e.target.value)}
-              placeholder="Masukkan nama lengkap Anda"
-              className="mt-1"
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="instansi" className="text-gray-700 font-medium">Instansi / Universitas</Label>
-            <Input
-              id="instansi"
-              value={instansi}
-              onChange={e => setInstansi(e.target.value)}
-              placeholder="Masukkan nama instansi Anda"
-              className="mt-1"
-              required
-            />
-          </div>
-          <div>
-            <Label className="text-gray-700 font-medium">Role</Label>
-            <Select onValueChange={setRole} value={role} required>
-              <SelectTrigger className="mt-1 w-full">
-                <SelectValue placeholder="Pilih role Anda" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Presenter">Presenter</SelectItem>
-                <SelectItem value="Participant">Participant</SelectItem>
-                <SelectItem value="Committee">Committee</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label className="text-gray-700 font-medium">Pilih Nama Anda</Label>
+            {loading ? (
+              <p className="text-sm text-gray-400 mt-2">Memuat daftar peserta...</p>
+            ) : participants.length === 0 ? (
+              <p className="text-sm text-red-500 mt-2">
+                Belum ada daftar peserta. Hubungi panitia.
+              </p>
+            ) : (
+              <div className="mt-1">
+                <ParticipantCombobox
+                  participants={participants}
+                  value={selectedId}
+                  onSelect={(p) => setSelectedId(p.id)}
+                />
+              </div>
+            )}
           </div>
           <Button
             type="submit"
-            disabled={!nama.trim() || !instansi.trim() || !role}
+            disabled={!selectedId}
             className="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 text-base disabled:opacity-50"
           >
             Lanjut — Ambil Foto <ArrowRight className="ml-2 w-4 h-4" />

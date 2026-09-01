@@ -1,0 +1,27 @@
+{
+  "name": "Participant",
+  "type": "object",
+  "properties": {
+    "nama": {
+      "type": "string"
+    },
+    "instansi": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "Participant",
+        "Presenter",
+        "Speaker",
+        "Panitia",
+        "VIP"
+      ],
+      "default": "Participant"
+    }
+  },
+  "required": [
+    "nama",
+    "role"
+  ]
+}

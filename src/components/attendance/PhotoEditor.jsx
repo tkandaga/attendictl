@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { ArrowRight, ZoomIn, ZoomOut, Move } from 'lucide-react';
 
-const TWIBBON_URL = 'https://media.base44.com/images/public/69fdae0983a85702d2227a8c/d9e29f14b_twibbone-ictl2026.png';
+const DEFAULT_TWIBBON_URL = 'https://media.base44.com/images/public/69fdae0983a85702d2227a8c/d9e29f14b_twibbone-ictl2026.png';
 
 // Template portrait: canvas 500x500, kotak abu di kiri bawah
 // ~x=3%, y=79%, w=42%, h=10% dari canvas 500px
@@ -18,23 +19,35 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, role, onNext
   const twibbonImg = useRef(null);
   const photoImg = useRef(null);
   const [loaded, setLoaded] = useState(false);
+  const [twibbonUrl, setTwibbonUrl] = useState(DEFAULT_TWIBBON_URL);
 
   const CANVAS_W = 500;
   const CANVAS_H = 500;
 
+  // Fetch twibbon URL set by admin (fallback to default)
   useEffect(() => {
+    base44.entities.Setting.filter({ key: 'twibbon_url' })
+      .then((rows) => {
+        if (rows.length && rows[0].value) setTwibbonUrl(rows[0].value);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!twibbonUrl || !photoDataUrl) return;
+    setLoaded(false);
     let loadedCount = 0;
     const checkLoaded = () => { loadedCount++; if (loadedCount === 2) setLoaded(true); };
 
     const twib = new Image();
     twib.crossOrigin = 'anonymous';
     twib.onload = checkLoaded;
-    twib.src = TWIBBON_URL;
+    twib.onerror = checkLoaded;
+    twib.src = twibbonUrl;
     twibbonImg.current = twib;
 
     const photo = new Image();
     photo.onload = () => {
-      // Init photo centered, filling canvas
       const scale = Math.max(CANVAS_W / photo.width, CANVAS_H / photo.height);
       setPhotoScale(scale);
       setPhotoPos({
@@ -45,7 +58,7 @@ export default function PhotoEditor({ photoDataUrl, nama, instansi, role, onNext
     };
     photo.src = photoDataUrl;
     photoImg.current = photo;
-  }, [photoDataUrl]);
+  }, [photoDataUrl, twibbonUrl]);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
