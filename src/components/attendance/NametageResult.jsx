@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
-import { Download, CheckCircle } from 'lucide-react';
+import { Download, CheckCircle, RotateCcw } from 'lucide-react';
 import { useSettings } from '@/lib/SettingsContext';
 
-export default function NametageResult({ compositeDataUrl, nama }) {
+export default function NametageResult({ compositeDataUrl, nama, onExit }) {
   const settings = useSettings();
   const confTag = (settings.conference_name || 'ICTL2026').replace(/\s+/g, '');
 
@@ -33,6 +33,13 @@ export default function NametageResult({ compositeDataUrl, nama }) {
           className="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 text-base"
         >
           <Download className="mr-2 w-5 h-5" /> Download Nametag
+        </Button>
+        <Button
+          onClick={onExit}
+          variant="outline"
+          className="w-full mt-2 py-3 text-base"
+        >
+          <RotateCcw className="mr-2 w-5 h-5" /> Keluar ke Dashboard
         </Button>
         <p className="text-xs text-gray-400 mt-3">
           Bagikan nametag ini di media sosialmu! #{confTag}

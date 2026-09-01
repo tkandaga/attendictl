@@ -120,7 +120,18 @@ export default function Attendance() {
         />
       )}
       {step === 4 && <SignaturePad onNext={handleSignatureNext} onBack={() => setStep(3)} />}
-      {step === 5 && <NametageResult compositeDataUrl={compositeDataUrl} nama={formData.nama} />}
+      {step === 5 && (
+        <NametageResult
+          compositeDataUrl={compositeDataUrl}
+          nama={formData.nama}
+          onExit={() => {
+            setStep(1);
+            setFormData({ nama: '', instansi: '', role: '' });
+            setPhotoDataUrl(null);
+            setCompositeDataUrl(null);
+          }}
+        />
+      )}
     </>
   );
 }
